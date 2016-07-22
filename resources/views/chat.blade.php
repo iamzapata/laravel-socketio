@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title>SocketIO Chat</title>
+        <title>Socket  Chat</title>
 
         <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
 
@@ -36,10 +36,12 @@
         </style>
     </head>
     <body>
-        <div class="container">
-            <div class="content">
-                <div class="title">Laravel 5</div>
-            </div>
+        <div id="chatContainer" class="container">
         </div>
     </body>
+
+    <script src="vendor/react/react.js"></script>
+    <script src="vendor/react/react-dom.js"></script>
+    <script src="vendor/socketio/socket.io-1.3.5.js"></script>
+    <script src="js/app.js"></script>
 </html>
