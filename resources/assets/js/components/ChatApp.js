@@ -13,21 +13,33 @@ class ChatApp extends React.Component {
     }
 
     sendMessage(message) {
+        let url = "messages";
 
         new Promise(function(resolve, reject) {
-            $.post('messages').success(function (a, b, c) {
-                console.log(a,b,c);
-            }).error(function (a, b, c) {
-                console.log(a,b,c);
+            $.ajax({
+                url,
+                type: "POST",
+                data: message,
+                success:function(a,b,c) {
+                    console.log(a,b,c);
+                    resolve(a);
+                },
+                error: function(a, b, c) {
+                    reject(a);
+                    console.log(a,b,c);
+                }
             });
         }).then(function(response) {
+
             console.log(this);
             this.setState({
                 messages: [... this.state.messages, {message, time: "10:00PM"}]
             });
 
-        }, function(error) {
-            console.log(error);
+        }.bind(this), function(error) {
+
+            console.log("errorskskssk", error);
+
         });
     }
 

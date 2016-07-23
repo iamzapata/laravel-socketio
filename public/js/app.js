@@ -55,20 +55,31 @@ var ChatApp = function (_React$Component) {
     _createClass(ChatApp, [{
         key: 'sendMessage',
         value: function sendMessage(message) {
+            var url = "messages";
 
             new Promise(function (resolve, reject) {
-                $.post('messages').success(function (a, b, c) {
-                    console.log(a, b, c);
-                }).error(function (a, b, c) {
-                    console.log(a, b, c);
+                $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: message,
+                    success: function success(a, b, c) {
+                        console.log(a, b, c);
+                        resolve(a);
+                    },
+                    error: function error(a, b, c) {
+                        reject(a);
+                        console.log(a, b, c);
+                    }
                 });
             }).then(function (response) {
+
                 console.log(this);
                 this.setState({
                     messages: [].concat(_toConsumableArray(this.state.messages), [{ message: message, time: "10:00PM" }])
                 });
-            }, function (error) {
-                console.log(error);
+            }.bind(this), function (error) {
+
+                console.log("errorskskssk", error);
             });
         }
     }, {

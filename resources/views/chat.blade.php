@@ -4,7 +4,16 @@
         <title>Socket  Chat</title>
 
         <link href="https://fonts.googleapis.com/css?family=Lato:100" rel="stylesheet" type="text/css">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
+        <script src="vendor/jquery/jquery.js"></script>
 
+        <script>
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+        </script>
         <style>
             html, body {
                 height: 100%;
@@ -41,7 +50,6 @@
     </body>
 
     <script src="vendor/react/react.js"></script>
-    <script src="vendor/jquery/jquery.js"></script>
     <script src="vendor/react/react-dom.js"></script>
     <script src="vendor/socketio/socket.io-1.3.5.js"></script>
     <script src="js/app.js"></script>
