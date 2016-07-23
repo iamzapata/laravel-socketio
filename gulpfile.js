@@ -26,8 +26,9 @@ var root = 'resources/assets/';
  */
 var utils = root + 'js/utils/';
 
-var socketio = 'public/vendor/socketio/';
 var react = 'public/vendor/react/';
+var jquery = 'public/vendor/jquery/';
+var socketio = 'public/vendor/socketio/';
 
 /*
  * Assets Output
@@ -39,7 +40,8 @@ elixir(function(mix) {
     mix.sass('app.scss');
 
     mix.copy(bower + 'socket.io.client/dist/socket.io-1.3.5.js', socketio)
-       .copy(bower + 'react/react.js', react)
+        .copy(bower + 'jquery/dist/jquery.js', jquery)
+        .copy(bower + 'react/react.js', react)
         .copy(bower + 'react/react-dom.js', react);
 
     mix.browserify('app.js');

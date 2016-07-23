@@ -14,3 +14,5 @@
 Route::get('chat', function () {
     return view('chat');
 });
+
+Route::resource('messages', 'Message\MessageController');
