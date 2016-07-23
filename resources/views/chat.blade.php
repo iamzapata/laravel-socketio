@@ -37,6 +37,12 @@
     </head>
     <body>
         <div id="chatContainer" class="container">
+            <ChatApp>
+                <ChatMessages></ChatMessages>
+                <ChatInput>
+                    <ChatSend></ChatSend>
+                </ChatInput>
+            </ChatApp>
         </div>
     </body>
 
