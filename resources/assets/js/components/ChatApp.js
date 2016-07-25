@@ -1,45 +1,48 @@
 import ChatSendForm from './ChatSendForm';
 import ChatMessages from './ChatMessages';
+import SocketChannel from '../SocketChannel';
 
 class ChatApp extends React.Component {
 
     constructor(props) {
         super(props);
+
         this.state = {
-            messages: [{message: 'Hello World', time: '11:10PM'}, {message: 'Hello React', time: '11:12PM'}]
+            messages: []
         }
+
+        this.socket = new SocketChannel(this);
 
         this.sendMessage = this.sendMessage.bind(this);
     }
 
+    receiveMessage(message) {
+        let msg = message.data.message;
+        let datetime = moment(message.data.datetime.date).format('MM/DD/YYYY h:m:s A');
+
+        this.setState({
+            messages: [... this.state.messages, {message:msg , time: datetime} ]
+        });
+    }
+
     sendMessage(message) {
         let url = "messages";
-
         new Promise(function(resolve, reject) {
             $.ajax({
                 url,
                 type: "POST",
-                data: message,
-                success:function(a,b,c) {
-                    console.log(a,b,c);
-                    resolve(a);
+                data: {message},
+                success:function(response) {
+                    resolve(response);
                 },
-                error: function(a, b, c) {
-                    reject(a);
-                    console.log(a,b,c);
+                error: function(error) {
+                    reject(error);
                 }
             });
         }).then(function(response) {
 
-            console.log(this);
-            this.setState({
-                messages: [... this.state.messages, {message, time: "10:00PM"}]
-            });
-
         }.bind(this), function(error) {
-
-            console.log("errorskskssk", error);
-
+            console.log("Error:", error);
         });
     }
 

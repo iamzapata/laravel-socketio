@@ -50,6 +50,7 @@
     </body>
 
     <script src="vendor/react/react.js"></script>
+    <script src="vendor/moment/moment.js"></script>
     <script src="vendor/react/react-dom.js"></script>
     <script src="vendor/socketio/socket.io-1.3.5.js"></script>
     <script src="js/app.js"></script>

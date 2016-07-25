@@ -1,4 +1,42 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var SocketChannel = function () {
+    function SocketChannel(chatApp) {
+        _classCallCheck(this, SocketChannel);
+
+        this.chatApp = chatApp;
+        this.url = "http://192.168.10.10:4444/";
+        this.socket = io(this.url);
+        this.channel = 'app-messages-channel:App\\Events\\Message\\IncomingMessage';
+        this.listen();
+    }
+
+    _createClass(SocketChannel, [{
+        key: "listen",
+        value: function listen() {
+            var _this = this;
+
+            this.socket.on(this.channel, function (message) {
+                _this.chatApp.receiveMessage(message);
+            });
+        }
+    }]);
+
+    return SocketChannel;
+}();
+
+exports.default = SocketChannel;
+
+},{}],2:[function(require,module,exports){
 'use strict';
 
 var _ChatApp = require('./components/ChatApp');
@@ -9,7 +47,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 ReactDOM.render(React.createElement(_ChatApp2.default, null), document.getElementById('chatApp'));
 
-},{"./components/ChatApp":2}],2:[function(require,module,exports){
+},{"./components/ChatApp":3}],3:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -25,6 +63,10 @@ var _ChatSendForm2 = _interopRequireDefault(_ChatSendForm);
 var _ChatMessages = require('./ChatMessages');
 
 var _ChatMessages2 = _interopRequireDefault(_ChatMessages);
+
+var _SocketChannel = require('../SocketChannel');
+
+var _SocketChannel2 = _interopRequireDefault(_SocketChannel);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -45,41 +87,43 @@ var ChatApp = function (_React$Component) {
         var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ChatApp).call(this, props));
 
         _this.state = {
-            messages: [{ message: 'Hello World', time: '11:10PM' }, { message: 'Hello React', time: '11:12PM' }]
+            messages: []
         };
+
+        _this.socket = new _SocketChannel2.default(_this);
 
         _this.sendMessage = _this.sendMessage.bind(_this);
         return _this;
     }
 
     _createClass(ChatApp, [{
+        key: 'receiveMessage',
+        value: function receiveMessage(message) {
+            var msg = message.data.message;
+            var datetime = moment(message.data.datetime.date).format('MM/DD/YYYY h:m:s A');
+
+            this.setState({
+                messages: [].concat(_toConsumableArray(this.state.messages), [{ message: msg, time: datetime }])
+            });
+        }
+    }, {
         key: 'sendMessage',
         value: function sendMessage(message) {
             var url = "messages";
-
             new Promise(function (resolve, reject) {
                 $.ajax({
                     url: url,
                     type: "POST",
-                    data: message,
-                    success: function success(a, b, c) {
-                        console.log(a, b, c);
-                        resolve(a);
+                    data: { message: message },
+                    success: function success(response) {
+                        resolve(response);
                     },
-                    error: function error(a, b, c) {
-                        reject(a);
-                        console.log(a, b, c);
+                    error: function error(_error) {
+                        reject(_error);
                     }
                 });
-            }).then(function (response) {
-
-                console.log(this);
-                this.setState({
-                    messages: [].concat(_toConsumableArray(this.state.messages), [{ message: message, time: "10:00PM" }])
-                });
-            }.bind(this), function (error) {
-
-                console.log("errorskskssk", error);
+            }).then(function (response) {}.bind(this), function (error) {
+                console.log("Error:", error);
             });
         }
     }, {
@@ -99,7 +143,7 @@ var ChatApp = function (_React$Component) {
 
 exports.default = ChatApp;
 
-},{"./ChatMessages":3,"./ChatSendForm":4}],3:[function(require,module,exports){
+},{"../SocketChannel":1,"./ChatMessages":4,"./ChatSendForm":5}],4:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -156,7 +200,7 @@ var ChatMessages = function (_React$Component) {
 
 exports.default = ChatMessages;
 
-},{"./ChatSingleMessage":5}],4:[function(require,module,exports){
+},{"./ChatSingleMessage":6}],5:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -223,7 +267,7 @@ var ChatSendForm = function (_React$Component) {
 
 exports.default = ChatSendForm;
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -256,12 +300,16 @@ var ChatSingleMessage = function (_React$Component) {
                 React.createElement(
                     "span",
                     null,
-                    this.props.message
+                    " ",
+                    this.props.message,
+                    " "
                 ),
                 React.createElement(
                     "span",
                     null,
-                    this.props.time
+                    " ",
+                    this.props.time,
+                    " "
                 )
             );
         }
@@ -272,6 +320,6 @@ var ChatSingleMessage = function (_React$Component) {
 
 exports.default = ChatSingleMessage;
 
-},{}]},{},[1]);
+},{}]},{},[2]);
 
 //# sourceMappingURL=app.js.map
